@@ -11,10 +11,10 @@ steps:
 
   - script: |
       # Install dependencies
-      export PATH=$PATH:~/.local/bin
-      pip install pytest pytest-playwright pytest-html
+      pip install --user pytest pytest-playwright pytest-html
       playwright install
-      source ~/.bashrc
+      export PATH=$PATH:~/.local/bin
+      python3 -m pytest tests/
     displayName: 'Install dependencies'
 
 
