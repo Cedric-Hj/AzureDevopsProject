@@ -1,22 +1,22 @@
 trigger:
   branches:
     include:
-      - test
+      - main
 pool:
   name: jenkins
 steps:
   - checkout: self
-  - script: |
+  
+  - script: >
       # Install dependencies
       pip install --user pytest pytest-playwright pytest-html
       playwright install
       export PATH=$PATH:/var/lib/jenkins/.local/bin/
     displayName: Install dependencies
+  
   - script: >
       # Run Playwright Python tests in /AzureRepo
-
-      python3 -m pytest
-      /var/lib/jenkins/myagent/_work/2/s/Test/Playwright/tests.py
+      python3 -m pytest /var/lib/jenkins/myagent/_work/2/s/Test/Playwright/tests.py
       --html=/var/lib/jenkins/myagent/_work/2/s/Test/Playwright/reportPY.html
     displayName: Run Playwright Python tests
   - script: >
