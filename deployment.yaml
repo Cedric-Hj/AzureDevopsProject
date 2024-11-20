@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ced-webpage-test
+  namespace: ced-devops-cicd-test
+  labels:
+    app: ced-webpage-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ced-webpage-test
+  template:
+    metadata:
+      labels:
+        app: ced-webpage-test
+    spec:
+      containers:
+        - name: ced-webpages-test
+          image: cedrichj/devops_cicd:test2.3
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            # Add environment variables if needed
