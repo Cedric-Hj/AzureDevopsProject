@@ -1,1 +1,50 @@
+trigger:
+- main
 
+parameters:
+- name: appVersion
+  displayName: 'Application Version'
+  type: string
+  default: '2.0.15'
+
+variables:
+  dockerRepo: "cedrichj/devops_cicd"
+  KUBECONFIG: '/var/lib/jenkins/.kube/kubeconfig'
+
+jobs:
+- job: BuildAndDeploy
+  pool:
+    name: jenkins
+
+  steps:
+  - task: Docker@2
+    inputs:
+      command: 'login'
+      containerRegistry: '<your-docker-service-connection>'
+    displayName: 'Login to Docker Registry'
+
+  - script: |
+      echo '<--------------- Checking Docker Image --------------->'
+      echo "${{ variables.dockerRepo }}:v${{ parameters.appVersion }}"
+      if ! docker image inspect ${{ variables.dockerRepo }}:v${{ parameters.appVersion }} >/dev/null 2>&1; then
+          echo "Docker image ${{ variables.dockerRepo }}:v${{ parameters.appVersion }} does not exist."
+          exit 1
+    displayName: 'Check Docker Image'
+
+  - script: |
+      echo '<--------------- Start of Helm Upgrade/Install --------------->'
+      sudo sed -i "s|image: ${{ variables.dockerRepo }}:.*|image: ${{ variables.dockerRepo }}:v${{ parameters.appVersion }}|" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/templates/deployment.yaml 
+      sudo sed -i "s/^appVersion: .*/appVersion: \"$appVersion\"/" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/Chart.yaml
+      sudo sed -i "s/^version: .*/version: $appVersion/" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/Chart.yaml                   
+      helm upgrade --install ced-devops-webapp-test /var/lib/jenkins/helm/Ced_Devops_Webapp-test \
+      --namespace ced-devops-cicd-test \
+      --kubeconfig=${{ variables.KUBECONFIG }} \
+      --wait
+      echo '<--------------- End of Helm Deploy --------------->'
+    displayName: 'Deploy App'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: 'reports'
+      artifact: 'reports'
+    condition: succeededOrFailed()
