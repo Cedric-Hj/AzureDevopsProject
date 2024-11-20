@@ -7,20 +7,20 @@ pool:
 steps:
   - checkout: self
   
-  - script: >
+  - script: |
       # Install dependencies
       pip install pytest pytest-playwright pytest-html
       playwright install
       export PATH=$PATH:/var/lib/jenkins/.local/bin/
     displayName: Install dependencies
   
-  - script: >
+  - script: |
       # Run Playwright Python tests in /AzureRepo
       sudo chown -R $(whoami):$(whoami) /var/lib/jenkins/myagent/_work/5/s/Test/Playwright
-      pytest /var/lib/jenkins/myagent/_work/5/s/Test/Playwright/tests.py --html=/var/lib/jenkins/myagent/_work/5/s/Test/Playwright/reportPY.html
+      pytest /var/lib/jenkins/myagent/_work/5/s/Test/Playwright/tests.py --html=/var/lib/jenkins/myagent/_work/5/s/Test/Playwright/reportPY.html -v
     displayName: Run Playwright Python tests
   
-  - script: >
+  - script: |
       # Run Playwright JS tests in /AzureRepo
       cd /var/lib/jenkins/myagent/_work/5/s/Test/Playwright
       source ~/.bashrc
