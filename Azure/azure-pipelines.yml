@@ -4,26 +4,37 @@ trigger:
     - test
 
 pool:
-  name: jenkins
+  name: jenkins  # Ensure this is your self-hosted agent pool name
 
 steps:
+  - checkout: self  # Default checkout of the repo into $(Build.SourcesDirectory)
+
 
   - script: |
-      # Ensure the correct permissions for the Playwright test folder
-      sudo chown -R $(whoami):$(whoami) /var/lib/jenkins/workspace/Tests/Playwright_PY_TestSuite01/Test/Playwright
-      
-      # Install dependencies (if necessary, e.g., install pytest and playwright)
-      pip install -r /var/lib/jenkins/workspace/Tests/Playwright_PY_TestSuite01/requirements.txt
-    displayName: 'Ensure correct permissions and install dependencies'
+      # Give permissions and run Playwright Python tests in /AzureRepo
+      playwright install
+      pip install pytest pytest-playwright pytest-html
+      sudo chown -R $(whoami):$(whoami) /var/lib/jenkins/myagent/_work/2/s/Test/Playwright
+      pytest /var/lib/jenkins/myagent/_work/2/s/Test/Playwright/tests.py --html=/var/lib/jenkins/myagent/_work/2/s/Test/Playwright/reportPY.html
+    displayName: 'Run Playwright Python tests'
 
   - script: |
-      # Run pytest and generate the JUnit XML report
-      pytest /var/lib/jenkins/workspace/Tests/Playwright_PY_TestSuite01/Test/Playwright/tests.py --junitxml=/var/lib/jenkins/workspace/Tests/Playwright_PY_TestSuite01/report.xml
-    displayName: 'Run Playwright tests with pytest'
+      # Give permissions and run Playwright JS tests in /AzureRepo
+      source ~/.bashrc
+      cd /var/lib/jenkins/myagent/_work/2/s/Test/Playwright
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME=reportJS.xml npx playwright test --reporter=junit
+    displayName: 'Run Playwright .JS tests'
 
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: '/var/lib/jenkins/workspace/Tests/Playwright_PY_TestSuite01/report.xml'
-      ArtifactName: 'TestReports'
+      PathtoPublish: '/var/lib/jenkins/myagent/_work/2/s/Test/Playwright/reportPY.html'
+      ArtifactName: 'PythonTestReports'
       publishLocation: 'Container'
-    displayName: 'Publish Test Report'
+    displayName: 'Publish Python Test Report'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '/var/lib/jenkins/myagent/_work/2/s/Test/Playwright/reportJS.xml'
+      ArtifactName: 'JavaScriptTestReports'
+      publishLocation: 'Container'
+    displayName: 'Publish JavaScript Test Report'
