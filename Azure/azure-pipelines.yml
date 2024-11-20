@@ -9,7 +9,7 @@ steps:
   
   - script: |
       # Install dependencies
-      pip install pytest pytest-playwright pytest-html
+      pip install -user pytest pytest-playwright pytest-html
       playwright install
       export PATH=$PATH:/var/lib/jenkins/.local/bin/
     displayName: Install dependencies
