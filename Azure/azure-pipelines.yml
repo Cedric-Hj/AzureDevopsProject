@@ -16,6 +16,7 @@ steps:
   
   - script: >
       # Run Playwright Python tests in /AzureRepo
+      sudo chown -R $(whoami):$(whoami) /var/lib/jenkins/myagent/_work/5/s/Test/Playwright
       python3 -m pytest /var/lib/jenkins/myagent/_work/5/s/Test/Playwright/tests.py
       --html=/var/lib/jenkins/myagent/_work/5/s/Test/Playwright/reportPY.html
     displayName: Run Playwright Python tests
