@@ -5,7 +5,7 @@ parameters:
 - name: appVersion
   displayName: 'Application Version'
   type: string
-  default: '2.0.2'
+  default: '2.0.3'
 
 variables:
   dockerRepo: "cedrichj/devops_cicd"
@@ -24,8 +24,6 @@ jobs:
     displayName: 'Login to Docker Registry'
 
   - script: |
-      echo '<--------------- Checking Docker Image --------------->'
-      echo "${{ variables.dockerRepo }}:v${{ parameters.appVersion }}"
       if ! docker image inspect ${{ variables.dockerRepo }}:v${{ parameters.appVersion }} >/dev/null 2>&1; then
           echo "Docker image ${{ variables.dockerRepo }}:v${{ parameters.appVersion }} does not exist."
           exit 1
@@ -33,7 +31,6 @@ jobs:
     displayName: 'Check Docker Image'
   
   - script: |
-      echo '<--------------- Start of Helm Upgrade/Install --------------->'
       sudo sed -i "s|image: ${{ variables.dockerRepo }}:.*|image: ${{ variables.dockerRepo }}:v${{ parameters.appVersion }}|" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/templates/deployment.yaml 
       sudo sed -i "s/^appVersion: .*/appVersion: \"${{ parameters.appVersion }}\"/" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/Chart.yaml
       sudo sed -i "s/^version: .*/version: ${{ parameters.appVersion }}/" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/Chart.yaml                   
@@ -41,15 +38,14 @@ jobs:
       --namespace ced-devops-cicd-test \
       --kubeconfig=${{ variables.KUBECONFIG }} \
       --wait
-      echo '<--------------- End of Helm Deploy --------------->'
+    displayName: 'Deploy with Helm'
 
   - script: |
       # Install dependencies for tests
       pip install --user pytest pytest-playwright pytest-html
       playwright install
       export PATH=$PATH:/var/lib/jenkins/.local/bin/
-      echo "hello"
-    displayName: Install dependencies
+    displayName: Install Playwright dependencies
   
   - script: |
       # Run Playwright Python tests in /AzureRepo
@@ -62,7 +58,7 @@ jobs:
       cd /var/lib/jenkins/myagent/_work/5/s/Test/Playwright
       source ~/.bashrc
       npx playwright test --reporter=html
-    displayName: Run Playwright .JS tests
+    displayName: Run Playwright Java tests
   
   - task: PublishBuildArtifacts@1
     inputs:
