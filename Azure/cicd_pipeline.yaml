@@ -5,14 +5,14 @@ parameters:
 - name: appVersion
   displayName: 'Application Version'
   type: string
-  default: '2.0.3'
+  default: '2.0.1'
 
 variables:
   dockerRepo: "cedrichj/devops_cicd"
   KUBECONFIG: '/var/lib/jenkins/.kube/kubeconfig'
 
 jobs:
-- job: BuildAndDeploy
+- job: DeployAndTestsApp
   pool:
     name: jenkins
 
@@ -31,6 +31,7 @@ jobs:
           exit 1
       fi
     displayName: 'Check Docker Image'
+  
   - script: |
       echo '<--------------- Start of Helm Upgrade/Install --------------->'
       sudo sed -i "s|image: ${{ variables.dockerRepo }}:.*|image: ${{ variables.dockerRepo }}:v${{ parameters.appVersion }}|" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/templates/deployment.yaml 
@@ -43,8 +44,37 @@ jobs:
       echo '<--------------- End of Helm Deploy --------------->'
     displayName: 'Deploy App'
 
-  - task: PublishPipelineArtifact@1
+  - script: |
+      # Install dependencies for tests
+      pip install --user pytest pytest-playwright pytest-html
+      playwright install
+      export PATH=$PATH:/var/lib/jenkins/.local/bin/
+      echo "hello"
+    displayName: Install dependencies
+  
+  - script: |
+      # Run Playwright Python tests in /AzureRepo
+      sudo chown -R jenkins:jenkins /var/lib/jenkins/myagent/_work/5/s/Test/Playwright
+      pytest -s /var/lib/jenkins/myagent/_work/5/s/Test/Playwright/tests.py --html=/var/lib/jenkins/myagent/_work/5/s/Test/Playwright/reportPY.html
+    displayName: Run Playwright Python tests
+  
+  - script: |
+      # Run Playwright JS tests in /AzureRepo
+      cd /var/lib/jenkins/myagent/_work/5/s/Test/Playwright
+      source ~/.bashrc
+      npx playwright test --reporter=html
+    displayName: Run Playwright .JS tests
+  
+  - task: PublishBuildArtifacts@1
     inputs:
-      targetPath: 'reports'
-      artifact: 'reports'
-    condition: succeededOrFailed()
+      PathtoPublish: /var/lib/jenkins/myagent/_work/5/s/Test/Playwright/reportPY.html
+      ArtifactName: PythonTestReports
+      publishLocation: Container
+    displayName: Publish Python Test Report
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: /var/lib/jenkins/myagent/_work/5/s/playwright-report/index.html
+      ArtifactName: JavaScriptTestReports
+      publishLocation: Container
+    displayName: Publish JavaScript Test Report
