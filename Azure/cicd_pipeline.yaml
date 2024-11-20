@@ -20,7 +20,7 @@ jobs:
   - task: Docker@2
     inputs:
       command: 'login'
-      containerRegistry: '<your-docker-service-connection>'
+      containerRegistry: 'DockerHubConnection'
     displayName: 'Login to Docker Registry'
 
   - script: |
