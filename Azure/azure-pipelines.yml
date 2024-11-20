@@ -21,11 +21,9 @@ steps:
     displayName: Run Playwright Python tests
   - script: >
       # Run Playwright JS tests in /AzureRepo
-
       cd /var/lib/jenkins/myagent/_work/2/s/Test/Playwright
-
-      PLAYWRIGHT_HTML_OUTPUT_NAME=reportJS.xml npx playwright test
-      --reporter=html
+      source ~/.bashrc
+      npx playwright test
     displayName: Run Playwright .JS tests
   - task: PublishBuildArtifacts@1
     inputs:
