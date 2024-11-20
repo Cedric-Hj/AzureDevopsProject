@@ -35,14 +35,13 @@ jobs:
   - script: |
       echo '<--------------- Start of Helm Upgrade/Install --------------->'
       sudo sed -i "s|image: ${{ variables.dockerRepo }}:.*|image: ${{ variables.dockerRepo }}:v${{ parameters.appVersion }}|" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/templates/deployment.yaml 
-      sudo sed -i "s/^appVersion: .*/appVersion: \"$appVersion\"/" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/Chart.yaml
-      sudo sed -i "s/^version: .*/version: $appVersion/" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/Chart.yaml                   
+      sudo sed -i "s/^appVersion: .*/appVersion: \"${{ parameters.appVersion }}\"/" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/Chart.yaml
+      sudo sed -i "s/^version: .*/version: ${{ parameters.appVersion }}/" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/Chart.yaml                   
       helm upgrade --install ced-devops-webapp-test /var/lib/jenkins/helm/Ced_Devops_Webapp-test \
       --namespace ced-devops-cicd-test \
       --kubeconfig=${{ variables.KUBECONFIG }} \
       --wait
       echo '<--------------- End of Helm Deploy --------------->'
-    displayName: 'Deploy App'
 
   - script: |
       # Install dependencies for tests
