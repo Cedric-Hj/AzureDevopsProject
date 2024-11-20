@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   reporter: [
     ['html', { 
-      outputFile: 'playwright-report/index.html', // Save the report to a file
+      outputFolder: 'playwright-report', // Corrected property name
       open: 'never'  // Disable the report server from starting
     }]
   ],
