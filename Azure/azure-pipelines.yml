@@ -25,7 +25,7 @@ steps:
       # Run Playwright JS tests in /AzureRepo
       cd /var/lib/jenkins/myagent/_work/5/s/Test/Playwright
       source ~/.bashrc
-      npx playwright test
+      npx playwright test --reporter=html
     displayName: Run Playwright .JS tests
   
   - task: PublishBuildArtifacts@1
