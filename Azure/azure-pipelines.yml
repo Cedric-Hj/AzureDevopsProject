@@ -12,6 +12,7 @@ steps:
   - script: |
       # Install dependencies
       export PATH=$PATH:~/.local/bin
+      source ~/.bashrc
       playwright install
       pip install pytest pytest-playwright pytest-html
     displayName: 'Run Playwright Python tests'
@@ -25,7 +26,6 @@ steps:
 
   - script: |
       # Give permissions and run Playwright JS tests in /AzureRepo
-      source ~/.bashrc
       cd /var/lib/jenkins/myagent/_work/2/s/Test/Playwright
       PLAYWRIGHT_JUNIT_OUTPUT_NAME=reportJS.xml npx playwright test --reporter=junit
     displayName: 'Run Playwright .JS tests'
