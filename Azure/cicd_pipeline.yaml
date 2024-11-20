@@ -29,8 +29,8 @@ jobs:
       if ! docker image inspect ${{ variables.dockerRepo }}:v${{ parameters.appVersion }} >/dev/null 2>&1; then
           echo "Docker image ${{ variables.dockerRepo }}:v${{ parameters.appVersion }} does not exist."
           exit 1
+      fi
     displayName: 'Check Docker Image'
-
   - script: |
       echo '<--------------- Start of Helm Upgrade/Install --------------->'
       sudo sed -i "s|image: ${{ variables.dockerRepo }}:.*|image: ${{ variables.dockerRepo }}:v${{ parameters.appVersion }}|" /var/lib/jenkins/helm/Ced_Devops_Webapp-test/templates/deployment.yaml 
