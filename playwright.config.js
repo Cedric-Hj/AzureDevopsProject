@@ -2,7 +2,8 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   use: {
-    video: 'on', // Enable video recording for all tests
+    screenshot: 'only-on-failure', // Take screenshots only on test failure
+    video: 'off', // Disable video recording
   },
   reporter: [
     ['html', { 
