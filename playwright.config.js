@@ -1,11 +1,13 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
+  use: {
+    video: 'on', // Enable video recording for all tests
+  },
   reporter: [
     ['html', { 
-      outputFolder: 'playwright-report', // Corrected property name
+      outputFolder: 'playwright-report', // Save the report to a folder
       open: 'never'  // Disable the report server from starting
     }]
   ],
-  // Optional: Set the timeout for test execution or other configurations as needed
 });
