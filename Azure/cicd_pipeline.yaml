@@ -5,7 +5,7 @@ parameters:
 - name: appVersion
   displayName: 'Application Version'
   type: string
-  default: 'test2.0.2'
+  default: '2.0.2'
 
 variables:
   dockerRepo: "cedrichj/devops_cicd"
