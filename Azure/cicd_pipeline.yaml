@@ -58,7 +58,7 @@ jobs:
       # Run Playwright JS tests in /AzureRepo
       cd /var/lib/jenkins/myagent/_work/6/s/Test/Playwright
       source ~/.bashrc
-      PLAYWRIGHT_HTML_OPEN='never' npx playwright test --reporter=html
+      npx playwright test 
     displayName: Run Playwright Java tests
     continueOnError: true
   
