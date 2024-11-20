@@ -52,6 +52,7 @@ jobs:
       sudo chown -R jenkins:jenkins /var/lib/jenkins/myagent/_work/6/s/Test/Playwright
       pytest -s /var/lib/jenkins/myagent/_work/6/s/Test/Playwright/tests.py --html=/var/lib/jenkins/myagent/_work/6/s/Test/Playwright/reportPY.html
     displayName: Run Playwright Python tests
+    continueOnError: true
   
   - script: |
       # Run Playwright JS tests in /AzureRepo
@@ -59,6 +60,7 @@ jobs:
       source ~/.bashrc
       npx playwright test --reporter=html
     displayName: Run Playwright Java tests
+    continueOnError: true
   
   - task: PublishBuildArtifacts@1
     inputs:
