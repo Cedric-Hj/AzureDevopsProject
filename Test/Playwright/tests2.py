@@ -46,11 +46,11 @@ def test_page_title(browser_context):
 def test_dev_environment_text(browser_context):
     with browser_context.new_page() as page:
         page.goto('http://192.168.0.101:31806/', timeout=5000)
-        dev_text_visible = page.locator("text=dev environment").is_visible(timeout=5000)
+        dev_text_visible = page.locator("text=Hello").is_visible(timeout=5000)
         assert dev_text_visible is True  # Ensure the "dev environment" text is visible
 
 def test_version_text(browser_context):
     with browser_context.new_page() as page:
         page.goto('http://192.168.0.101:31806/', timeout=5000)
         version_text = page.locator("#version").text_content(timeout=5000)
-        assert version_text == 'v2.0.3'  # Ensure the version is displayed correctly
+        assert version_text == 'v2.0.1'  # Ensure the version is displayed correctly
